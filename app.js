@@ -1,28 +1,30 @@
 const Web3 = require('web3');
+const solc = require("solc");
 const fs = require('fs');
 
-// Create an account on Ropsten testnet
-// Using a second account to call methods on deployed contract
-const myAccount = "your account address here";
-const secondAccount = "your second account address here";
+const myAccount = process.argv[3];
 
 // Start Parity locally and connect via RPC
 const web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
 
-// Compile with solc:
-// solc Greeter.sol --combined-json abi,asm,ast,bin,bin-runtime,clone-bin,devdoc,interface,opcodes,srcmap,srcmap-runtime,userdoc > contracts.json
-const source = fs.readFileSync("contracts.json");
-const contracts = JSON.parse(source)["contracts"];
-const compiledContract = contracts['Greeter.sol:greeter'];
+if(process.argv.length < 3) {
+    console.log("Please enter .sol file as first argument.");
+    process.exit();
+};
+
+const source = fs.readFileSync(process.argv[2]).toString();
+
+const contracts = solc.compile(source).contracts
+const compiledContract = contracts[':greeter'];
 
 // grab artifacts
-const abiJSON = JSON.parse(compiledContract.abi);
-const evmBytecode = '0x' + compiledContract.bin;
+const abi = JSON.parse(compiledContract.metadata).output.abi;
+const bytecode = '0x' + compiledContract.bytecode;
 
 //TODO: sign this contract without Parity UI
-const contract = new web3.eth.Contract(abiJSON, "", {
+const contract = new web3.eth.Contract(abi, "", {
     from: myAccount,
-    data: evmBytecode
+    data: bytecode
 });
 
 // Initialize with constructor arguments and send to blockchain
@@ -35,13 +37,13 @@ contract.deploy({
 .then(res => {
     console.log("SUCCESS!")
     const deployedAddress = res._address;
-    const deployedContract = new web3.eth.Contract(abiJSON, deployedAddress);
+    const deployedContract = new web3.eth.Contract(abi, deployedAddress);
 
     console.log("Contract deployed to address:");
     console.log("- " + deployedAddress)
 
     console.log("Calling say() on deployed contract...");
-    return deployedContract.methods.say().call({from: secondAccount})
+    return deployedContract.methods.say().call({from: myAccount})
 })
 .then(res => {
     console.log("Called say()! Response:")
