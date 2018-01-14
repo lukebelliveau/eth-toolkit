@@ -61,7 +61,7 @@ const deploy = () => {
     
     // Initialize with constructor arguments and send to blockchain
     const myMessage = "bonsoir";
-    console.log("Attempting to deploy contract...");
+    console.log("Attempting to deploy contract, approve in Parity UI...");
     contract.deploy({
         arguments: [myMessage]
     })
