@@ -1,7 +1,7 @@
 {
-  "name": "practice",
-  "version": "1.0.0",
-  "main": "index.js",
+  "name": "eth-toolkit",
+  "version": "0.0.1",
+  "main": "app.js",
   "license": "MIT",
   "scripts": {
     "start": "node app.js",
@@ -9,10 +9,10 @@
   },
   "dependencies": {
     "fs": "^0.0.1-security",
-    "web3": "^1.0.0-beta.27"
+    "web3": "^1.0.0-beta.27",
+    "solc": "^0.4.19"
   },
   "devDependencies": {
-    "nodemon": "^1.14.11",
-    "solc": "^0.4.19"
+    "nodemon": "^1.14.11"
   }
 }
