@@ -7,10 +7,13 @@
     "start": "node app.js",
     "watch": "nodemon app.js"
   },
+  "bin": {
+    "deploy": "app.js"
+  },
   "dependencies": {
     "fs": "^0.0.1-security",
-    "web3": "^1.0.0-beta.27",
-    "solc": "^0.4.19"
+    "solc": "^0.4.19",
+    "web3": "^1.0.0-beta.27"
   },
   "devDependencies": {
     "nodemon": "^1.14.11"
