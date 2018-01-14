@@ -7,14 +7,14 @@ WIP
 
     $ parity
 
-## Deploy contract from *.sol file
+## Deploy contract
 `$ eth-toolkit deploy <path to *.sol file> <your address>`
 
 Example:
 
     $ yarn start deploy Greeter.sol 0x00a329c0648769A73afAc7F9381E08FB43dBEA72
 
-## Make call to contract
+## Call contract
 `$ eth-toolkit call <method call> <address of contract> <path to *.sol file>`
 
 Example:
