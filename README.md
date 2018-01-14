@@ -6,6 +6,8 @@ WIP
     $ npm install -g eth-toolkit
 
     $ parity
+    
+Note that you still need to go into the Parity UI to confirm transaction requests.
 
 ## Deploy contract
 `$ eth-toolkit deploy <path to *.sol file> <your address>`
