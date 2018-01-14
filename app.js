@@ -20,9 +20,9 @@ const getABIAndBytecode = contractPath => {
 }
 
 const call = (
-    call = process.argv[3], 
-    contractAddress = process.argv[4], 
-    contractPath = process.argv[5], 
+    contractPath = process.argv[3],
+    call = process.argv[4], 
+    contractAddress = process.argv[5], 
     options = process.argv[6]
 ) => {
     contractABI = getABIAndBytecode(contractPath).abi;
@@ -68,15 +68,12 @@ const deploy = () => {
     .send()
     .then(res => {
         const deployedAddress = res._address;
-        const deployedContract = new web3.eth.Contract(abi, deployedAddress);
 
         console.log("Success! Contract deployed to address:");
         console.log("- " + deployedAddress)
-    
-        return call("say()", deployedAddress, "./Greeter.sol")
     })
     .catch(err => {
-        console.log("ERROR!")
+        console.log("Error deploying contract:")
         console.log("- " + err)
     })
 }
