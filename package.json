@@ -1,8 +1,12 @@
 {
   "name": "eth-toolkit",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "main": "app.js",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lukebelliveau/eth-toolkit.git"
+  },
   "scripts": {
     "start": "node app.js",
     "watch": "nodemon app.js"
