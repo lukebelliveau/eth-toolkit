@@ -3,7 +3,9 @@ CLI tool for Ethereum development.
 
 WIP, can currently compile and deploy a contract.
 
+`npm install -g eth-toolkit`
+
 ## Deploy contract from *.sol file
 `$ parity`
 
-`$ eth-toolkit <path to *.sol file> <your address>`
+`$ eth-toolkit deploy <path to *.sol file> <your address>`
