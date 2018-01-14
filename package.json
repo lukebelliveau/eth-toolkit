@@ -1,6 +1,6 @@
 {
   "name": "eth-toolkit",
-  "version": "0.0.2",
+  "version": "0.0.6",
   "main": "app.js",
   "license": "MIT",
   "scripts": {
@@ -8,7 +8,7 @@
     "watch": "nodemon app.js"
   },
   "bin": {
-    "deploy": "app.js"
+    "eth-toolkit": "app.js"
   },
   "dependencies": {
     "fs": "^0.0.1-security",
