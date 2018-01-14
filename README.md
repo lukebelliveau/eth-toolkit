@@ -1,7 +1,7 @@
 # eth-toolkit
-CLI tool for Ethereum development.
+CLI tool for Ethereum developers.
 
-WIP, can currently compile and deploy a contract.
+WIP
 
     $ npm install -g eth-toolkit
 
