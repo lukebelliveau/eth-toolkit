@@ -17,10 +17,20 @@ This is only intended for use on development chains. I repeat..
 
 The easiest way to explore `eth-toolkit` is the prompt interface, which `eth-toolkit` runs by default.
 If you'd rather enter all arguments in one command, run `eth-toolkit args` and enter values as shown below.
-    
-Note that you still need to go into the Parity UI to confirm transaction requests.
 
-## Deploy contract
+Here's what I can do:
+- [deploy contract](#deploy-contract)
+- [call contract method](#call-method)
+
+## deploy contract
+### Inputs
+- **Path to \*.sol file**: Path to contract you're deploying.
+- **Name of contract**: Name of contract, so `contract Greeter {...}` corresponds to "Greeter".
+- **Address of sender**: Your address to send the contract from. For now, you'll need to use the Parity UI to sign the contract. If you'd like `eth-toolkit` to generate a new account and publish from there, leave this blank.
+- **Arguments for constructor**: This string is inserted into an array and passed as the `arguments`.
+value in `contract.deploy()`, so separate your args with commas.
+
+### Args
 `$ eth-toolkit args deploy <path to *.sol file> <your address> <arguments>`
 
 Example:
@@ -30,7 +40,15 @@ Example:
 Note: to have `eth-toolkit` generate an account and deploy from there, enter 'new' as the address.
 
 
-## Call contract
+## call method
+### Inputs
+- **Path to \*.sol file**: Path to contract you're deploying.
+- **Name of contract**: Name of contract, so `contract Greeter {...}` corresponds to "Greeter".
+- **Call to execute**: Method to call. Call with your arguments - like `add(2, 2)`.
+- **Address of contract**: Address of callee.
+
+
+### Args
 `$ eth-toolkit args call <path to *.sol file> <method call> <address of contract>`
 
 Example:

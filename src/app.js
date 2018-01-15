@@ -61,8 +61,15 @@ const deploy = (
         console.log("No address specified, creating account...")
         const newAccount = web3.eth.accounts.create();
 
+        console.log("Account created. NEVER use this account for anything valuable.")
+        console.log({
+            address: newAccount.address,
+            privateKey: newAccount.privateKey,
+        })
+
         const newAccountAddress = newAccount.address;
         const newAccountPrivateKey = newAccount.privateKey;
+
 
         const contract = new web3.eth.Contract(abi, "", {
             from: newAccountAddress,
