@@ -1,5 +1,5 @@
-const { call } = require("../src/app");
 const { deploy } = require("../src/operations/deploy");
+const { call } = require("../src/operations/call");
 //mute logs
 console.log = jest.fn();
 
