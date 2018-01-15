@@ -11,7 +11,6 @@ WIP
     
 Note that you still need to go into the Parity UI to confirm transaction requests.
 
-<<<<<<< HEAD
 ## Deploy contract
 `$ eth-toolkit deploy <path to *.sol file> <your address>`
 
