@@ -1,6 +1,6 @@
 {
   "name": "eth-toolkit",
-  "version": "0.0.15",
+  "version": "0.0.16",
   "main": "src/app.js",
   "license": "MIT",
   "repository": {

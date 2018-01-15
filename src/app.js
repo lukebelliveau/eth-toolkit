@@ -57,7 +57,7 @@ const deploy = (
 
     const { abi, bytecode } = getABIAndBytecode(contractPath.toString(), contractName);
 
-    if(myAccount === "" || "new") {
+    if(myAccount === "" || myAccount === "new") {
         console.log("No address specified, creating account...")
         const newAccount = web3.eth.accounts.create();
 
@@ -82,10 +82,7 @@ const deploy = (
             data: deployABI,
             gas: 1000000,
         }, newAccountPrivateKey)
-        .then(transaction => {
-            // send transaction
-            return web3.eth.sendSignedTransaction(transaction.rawTransaction)
-        })
+        .then(transaction => web3.eth.sendSignedTransaction(transaction.rawTransaction))
         .then(res => {
             const deployedAddress = res.contractAddress;
 
@@ -103,7 +100,7 @@ const deploy = (
             data: bytecode
         });
 
-        console.log("Attempting to deploy contract, approve in Parity UI...");
+        console.log("Attempting to deploy contract, you must approve in Parity UI...");
         return contract.deploy({
             arguments: [myArguments]
         })
@@ -119,9 +116,6 @@ const deploy = (
             console.log("- " + err)
         })
     }
-    
-    
-
 }
 
 const help = () => {
