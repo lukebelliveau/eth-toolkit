@@ -88,30 +88,48 @@ const deploy = (
     // Initialize with constructor arguments and send to blockchain
     console.log("Attempting to deploy contract, approve in Parity UI...");
     const toDeploy = contract.deploy({
-        arguments: [myArguments]
+        arguments: ["ITS WORKING"]
     })
 
-    console.log("DATA TO DEPLOY:")
-    console.log(toDeploy._deployData)
+    // console.log("CONTRACT DATA")
+    // console.log(contract.options.data)
 
-    const transaction = newAccount.signTransaction({
-        data: toDeploy._deployData,
+    // console.log("DATA TO DEPLOY:")
+    // console.log(toDeploy._deployData)
+
+    const deployABI = toDeploy.encodeABI();
+    console.log("ABI:")
+    console.log(toDeploy.encodeABI())
+
+
+    //sign contract deployment transaction
+    newAccount.signTransaction({
+        data: deployABI,
         gas: 1000000,
     }, newAccountPrivateKey)
     .then(transaction => {
-        web3.eth.sendSignedTransaction(transaction.rawTransaction)
-        .then(res => {
-            const deployedAddress = res.contractAddress;
+        return web3.eth.sendSignedTransaction(transaction.rawTransaction)
+    })
+    .then(res => {
+        const deployedAddress = res.contractAddress;
 
-            console.log("Success! Contract deployed to address:");
-            console.log("- " + deployedAddress)
-        })
-        .catch(err => {
-            console.log("ERROR SENDING TRANS")
-            console.log(err)
-        })
+        console.log("Success! Contract deployed to address:");
+        console.log("- " + deployedAddress)
+    })
+    // .then(() => {
+    //     console.log("calling send()...")
+    //     return toDeploy.send();
+    // })
+    .then(res => {
+        console.log("called send!")
+        console.log(res)
+    })
+    .catch(err => {
+        console.log("ERROR SENDING TRANS")
+        console.log(err)
     })
 
+    // console.log("haven't sent")
     // return toDeploy.send()
     // .then(res => {
     //     const deployedAddress = res._address;
