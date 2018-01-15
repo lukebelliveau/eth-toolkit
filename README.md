@@ -3,6 +3,10 @@ CLI tool for Ethereum developers.
 
 WIP
 
+This is only intended for use on development chains. I repeat..
+
+**This application offers no protection or security of any kind. Do not use outside of development chains.**
+
     $ npm install -g eth-toolkit
 
     $ parity
@@ -20,6 +24,8 @@ Note that you still need to go into the Parity UI to confirm transaction request
 Example:
 
     $ eth-toolkit args deploy Greeter.sol 0x00a329c0648769A73afAc7F9381E08FB43dBEA72 "Hello world!"
+
+Note: to have `eth-toolkit` generate an account and deploy from there, enter 'new' as the address.
 
 
 ## Call contract

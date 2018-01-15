@@ -56,91 +56,72 @@ const deploy = (
     console.log(`Compiling and deploying ${contractPath}`)
 
     const { abi, bytecode } = getABIAndBytecode(contractPath.toString(), contractName);
+
+    if(myAccount === "" || "new") {
+        console.log("No address specified, creating account...")
+        const newAccount = web3.eth.accounts.create();
+
+        const newAccountAddress = newAccount.address;
+        const newAccountPrivateKey = newAccount.privateKey;
+
+        const contract = new web3.eth.Contract(abi, "", {
+            from: newAccountAddress,
+            data: bytecode
+        });
+
+        console.log(`Attempting to deploy contract from address ${newAccountAddress}...`);
+        // create deploy object
+        const toDeploy = contract.deploy({
+            arguments: [myArguments]
+        })
+
+        // encode ABI (contract data + constructor parameters)
+        const deployABI = toDeploy.encodeABI();
+        // sign transaction
+        return newAccount.signTransaction({
+            data: deployABI,
+            gas: 1000000,
+        }, newAccountPrivateKey)
+        .then(transaction => {
+            // send transaction
+            return web3.eth.sendSignedTransaction(transaction.rawTransaction)
+        })
+        .then(res => {
+            const deployedAddress = res.contractAddress;
+
+            console.log("Success! Contract deployed to address:");
+            console.log("- " + deployedAddress)
+        })
+        .catch(err => {
+            console.log("Error deploying contract:")
+            console.log(err)
+        })
+
+    } else {
+        const contract = new web3.eth.Contract(abi, "", {
+            from: myAccount,
+            data: bytecode
+        });
+
+        console.log("Attempting to deploy contract, approve in Parity UI...");
+        return contract.deploy({
+            arguments: [myArguments]
+        })
+        .send()
+        .then(res => {
+            const deployedAddress = res._address;
+
+            console.log("Success! Contract deployed to address:");
+            console.log("- " + deployedAddress)
+        })
+        .catch(err => {
+            console.log("Error deploying contract:")
+            console.log("- " + err)
+        })
+    }
     
-    //TODO: sign this contract without Parity UI
-    const newAccount = web3.eth.accounts.create();
-
-    const newAccountAddress = newAccount.address;
-    const newAccountPrivateKey = newAccount.privateKey;
-
-    // console.log("ACCOUNT")
-    // console.log(newAccount)
-
-    const contract = new web3.eth.Contract(abi, "", {
-        from: newAccountAddress,
-        data: bytecode
-    });
-
-    // console.log("CONTRACT")
-    // console.log(contract)
-
-    // const transaction = newAccount.signTransaction({
-    //     data: contract.options.data,
-    //     gas: 1000000,
-    // }, newAccountPrivateKey)
-    // .then(transaction => {
-    //     console.log("SIGNED:")
-    //     console.log(transaction)
-    // })
-
     
 
-    // Initialize with constructor arguments and send to blockchain
-    console.log("Attempting to deploy contract, approve in Parity UI...");
-    const toDeploy = contract.deploy({
-        arguments: ["ITS WORKING"]
-    })
-
-    // console.log("CONTRACT DATA")
-    // console.log(contract.options.data)
-
-    // console.log("DATA TO DEPLOY:")
-    // console.log(toDeploy._deployData)
-
-    const deployABI = toDeploy.encodeABI();
-    console.log("ABI:")
-    console.log(toDeploy.encodeABI())
-
-
-    //sign contract deployment transaction
-    newAccount.signTransaction({
-        data: deployABI,
-        gas: 1000000,
-    }, newAccountPrivateKey)
-    .then(transaction => {
-        return web3.eth.sendSignedTransaction(transaction.rawTransaction)
-    })
-    .then(res => {
-        const deployedAddress = res.contractAddress;
-
-        console.log("Success! Contract deployed to address:");
-        console.log("- " + deployedAddress)
-    })
-    // .then(() => {
-    //     console.log("calling send()...")
-    //     return toDeploy.send();
-    // })
-    .then(res => {
-        console.log("called send!")
-        console.log(res)
-    })
-    .catch(err => {
-        console.log("ERROR SENDING TRANS")
-        console.log(err)
-    })
-
-    // console.log("haven't sent")
-    // return toDeploy.send()
-    // .then(res => {
-    //     const deployedAddress = res._address;
-
-    //     console.log("Success! Contract deployed to address:");
-    //     console.log("- " + deployedAddress)
-    // })
-    // .catch(err => {
-    //     console.log("Error deploying contract:")
-    //     console.log("- " + err)
-    // })
 }
 
 const help = () => {
@@ -193,7 +174,7 @@ const deployPromptAndExecute = () => {
     {
         type: "input",
         name: "myAccount",
-        message: "Address of transaction sender:"
+        message: "Address of transaction sender (if left blank, will create new account):"
     },
     {
         type: "input",
