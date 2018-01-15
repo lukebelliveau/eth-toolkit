@@ -47,6 +47,25 @@ const call = (
     })
 };
 
+const getDeployment = (account, abi, bytecode, arguments) => {
+    const contract = new web3.eth.Contract(abi, "", {
+        from: account,
+        data: bytecode
+    });
+
+    console.log(`Attempting to deploy contract from address ${account}...`);
+    let deployment;
+    if(arguments) {
+        deployment = contract.deploy({
+            arguments: [arguments]
+        })
+    } else {
+        deployment = contract.deploy();
+    }
+
+    return deployment;
+}
+
 const deploy = (
     contractPath = argumentMap.deploy.contractPath, 
     contractName = argumentMap.deploy.contractName,
@@ -66,56 +85,26 @@ const deploy = (
             address: newAccount.address,
             privateKey: newAccount.privateKey,
         })
-
-        const newAccountAddress = newAccount.address;
-        const newAccountPrivateKey = newAccount.privateKey;
-
-
-        const contract = new web3.eth.Contract(abi, "", {
-            from: newAccountAddress,
-            data: bytecode
-        });
-
-        console.log(`Attempting to deploy contract from address ${newAccountAddress}...`);
-        let deployment;
-        if(myArguments) {
-            deployment = contract.deploy({
-                arguments: [myArguments]
-            })
-        } else {
-            deployment = contract.deploy();
-        }
+        const deployment = getDeployment(newAccount.address, abi, bytecode, myArguments);
 
         // encode ABI (contract data + constructor parameters)
         const deployABI = deployment.encodeABI();
+
         // sign transaction
         return newAccount.signTransaction({
             data: deployABI,
             gas: 1000000,
-        }, newAccountPrivateKey)
-
+        }, newAccount.privateKey)
         .then(transaction => 
             deployAndReport(
                 web3.eth.sendSignedTransaction, 
                 "contractAddress", 
-                transaction.rawTransaction)
-            );
+                transaction.rawTransaction
+            ));
 
     } else {
-        const contract = new web3.eth.Contract(abi, "", {
-            from: myAccount,
-            data: bytecode
-        });
-
-        console.log("Attempting to deploy contract, you must approve in Parity UI...");
-        let deployment;
-        if(myArguments) {
-            deployment = contract.deploy({
-                arguments: [myArguments]
-            })
-        } else {
-            deployment = contract.deploy();
-        }
+        console.log("Remember to sign your contract via Parity UI.")
+        const deployment = getDeployment(myAccount, abi, bytecode, myArguments);
 
         return deployAndReport(deployment.send, "_address");
     }
