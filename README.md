@@ -9,7 +9,7 @@ WIP
 
     $ eth-toolkit
 
-The easiest way to navigate is the prompt interface, which is the default when you start `eth-toolkit`.
+The easiest way to explore `eth-toolkit` is the prompt interface, which `eth-toolkit` runs by default.
 If you'd rather enter all arguments in one command, run `eth-toolkit args` and enter values as shown below.
     
 Note that you still need to go into the Parity UI to confirm transaction requests.
