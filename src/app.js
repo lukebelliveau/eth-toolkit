@@ -28,14 +28,15 @@ const call = (
   contractName = argumentMap.call.contractName,
   call = argumentMap.call.call,
   contractAddress = argumentMap.call.contractAddress,
-  options = argumentMap.call.options
+  options = argumentMap.call.options,
 ) => {
   contractABI = getABIAndBytecode(contractPath, contractName).abi;
 
   const contract = new web3.eth.Contract(contractABI, contractAddress);
 
   console.log(`Calling ${call} on ${contractAddress}...`);
-  return eval(`contract.methods.${call}.call()`)
+  // return eval(`contract.methods.${call}.call()`)
+  return contract.methods.say().call()
     .then(res => {
       console.log(`Response:`);
       console.log(res);
@@ -44,20 +45,21 @@ const call = (
     .catch(err => {
       console.log(`Error calling ${call}:`);
       console.log(err);
+      throw Error(err);
     });
 };
 
-const getDeployment = (account, abi, bytecode, arguments) => {
+const getDeployment = (account, abi, bytecode, constructorArguments) => {
   const contract = new web3.eth.Contract(abi, "", {
     from: account,
-    data: bytecode
+    data: bytecode,
   });
 
   console.log(`Attempting to deploy contract from address ${account}...`);
   let deployment;
-  if (arguments) {
+  if (constructorArguments) {
     deployment = contract.deploy({
-      arguments: [arguments]
+      arguments: [constructorArguments],
     });
   } else {
     deployment = contract.deploy();
@@ -70,13 +72,13 @@ const deploy = (
   contractPath = argumentMap.deploy.contractPath,
   contractName = argumentMap.deploy.contractName,
   myAccount = argumentMap.deploy.myAccount,
-  myArguments = argumentMap.deploy.myArguments
+  myArguments = argumentMap.deploy.myArguments,
 ) => {
   console.log(`Compiling and deploying ${contractPath}`);
 
   const { abi, bytecode } = getABIAndBytecode(
     contractPath.toString(),
-    contractName
+    contractName,
   );
 
   if (myAccount === "" || myAccount === "new") {
@@ -84,17 +86,17 @@ const deploy = (
     const newAccount = web3.eth.accounts.create();
 
     console.log(
-      "Account created. NEVER use this account for anything valuable."
+      "Account created. NEVER use this account for anything valuable.",
     );
     console.log({
       address: newAccount.address,
-      privateKey: newAccount.privateKey
+      privateKey: newAccount.privateKey,
     });
     const deployment = getDeployment(
       newAccount.address,
       abi,
       bytecode,
-      myArguments
+      myArguments,
     );
 
     // encode ABI (contract data + constructor parameters)
@@ -105,16 +107,16 @@ const deploy = (
       .signTransaction(
         {
           data: deployABI,
-          gas: 1000000
+          gas: 1000000,
         },
-        newAccount.privateKey
+        newAccount.privateKey,
       )
       .then(transaction =>
         deployAndReport(
           web3.eth.sendSignedTransaction,
           "contractAddress",
-          transaction.rawTransaction
-        )
+          transaction.rawTransaction,
+        ),
       );
   } else {
     console.log("Remember to sign your contract via Parity UI.");
@@ -131,10 +133,12 @@ const deployAndReport = (send, addressKey, args) => {
 
       console.log("Success! Contract deployed to address:");
       console.log("- " + deployedAddress);
+      return deployedAddress;
     })
     .catch(err => {
       console.log("Error deploying contract:");
       console.log("- " + err);
+      throw Error(err);
     });
 };
 
@@ -150,7 +154,7 @@ const help = () => {
         $ eth-toolkit call <path to *.sol file> <method call> <address of contract>
         
         Example:
-        $ eth-toolkit call Greeter.sol "say()" 0x83d85eEB38A2dC37EAc0239c19b343a7653d8F79`
+        $ eth-toolkit call Greeter.sol "say()" 0x83d85eEB38A2dC37EAc0239c19b343a7653d8F79`,
   );
   return new Promise(res => res());
 };
@@ -180,30 +184,30 @@ const deployPromptAndExecute = () => {
     {
       type: "input",
       name: "contractPath",
-      message: "Path to *.sol file for deployment:"
+      message: "Path to *.sol file for deployment:",
     },
     {
       type: "input",
       name: "contractName",
-      message: "Name of contract for deployment:"
+      message: "Name of contract for deployment:",
     },
     {
       type: "input",
       name: "myAccount",
       message:
-        "Address of transaction sender (if left blank, will create new account):"
+        "Address of transaction sender (if left blank, will create new account):",
     },
     {
       type: "input",
       name: "myArguments",
-      message: "Arguments for contract constructor (optional):"
-    }
+      message: "Arguments for contract constructor (optional):",
+    },
   ]).then(res => {
     return deploy(
       res.contractPath,
       res.contractName,
       res.myAccount,
-      res.myArguments
+      res.myArguments,
     );
   });
 };
@@ -214,35 +218,35 @@ const callPromptAndExecute = () => {
     {
       type: "input",
       name: "contractPath",
-      message: "Path to *.sol file for contract call:"
+      message: "Path to *.sol file for contract call:",
     },
     {
       type: "input",
       name: "contractName",
-      message: "Name of contract for deployment:"
+      message: "Name of contract for deployment:",
     },
     {
       type: "input",
       name: "call",
-      message: "Call to execute (ex. add(1, 2)):"
+      message: "Call to execute (ex. add(1, 2)):",
     },
     {
       type: "input",
       name: "contractAddress",
-      message: "Address of contract to call:"
+      message: "Address of contract to call:",
     },
     {
       type: "input",
       name: "options",
-      message: "Options (optional):"
-    }
+      message: "Options (optional):",
+    },
   ]).then(res => {
     return call(
       res.contractPath,
       res.contractName,
       res.call,
       res.contractAddress,
-      res.options
+      res.options,
     );
   });
 };
@@ -259,7 +263,7 @@ const runPrompt = () => {
     type: "list",
     name: "operation",
     message: "What would you like to do?",
-    choices: ["deploy", "call", "help", "exit"]
+    choices: ["deploy", "call", "help", "exit"],
   }).then(response => {
     const operation = response.operation;
 
@@ -287,8 +291,17 @@ const runPrompt = () => {
   });
 };
 
-if (argumentMap.cliArgs) {
-  executeOperation(argumentMap.operation);
-} else {
-  runPrompt();
-}
+const run = () => {
+  if (argumentMap.cliArgs) {
+    executeOperation(argumentMap.operation);
+  } else {
+    runPrompt();
+  }
+};
+
+run();
+
+module.exports = {
+  deploy,
+  call,
+};

@@ -10,7 +10,7 @@
   "scripts": {
     "start": "node src/app.js",
     "watch": "nodemon src/app.js",
-    "prettier": "prettier src/* --write"
+    "prettier": "prettier --trailing-comma all --write \"./src/**/*.js\" \"./test/**/*.js\""
   },
   "bin": {
     "eth-toolkit": "src/app.js"
@@ -22,7 +22,9 @@
     "web3": "^1.0.0-beta.27"
   },
   "devDependencies": {
+    "jest": "^22.1.1",
     "nodemon": "^1.14.11",
-    "prettier": "^1.10.2"
+    "prettier": "^1.10.2",
+    "solc": "^0.4.19"
   }
 }

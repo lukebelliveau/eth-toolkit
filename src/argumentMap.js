@@ -6,13 +6,13 @@ module.exports = {
     contractPath: process.argv[4],
     contractName: process.argv[5],
     myAccount: process.argv[6],
-    myArguments: process.argv[7]
+    myArguments: process.argv[7],
   },
   call: {
     contractPath: process.argv[4],
     contractName: process.argv[5],
     call: process.argv[6],
     contractAddress: process.argv[7],
-    options: process.argv[8]
-  }
+    options: process.argv[8],
+  },
 };
