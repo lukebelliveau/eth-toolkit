@@ -46,15 +46,13 @@ const call = (
     })
 };
 
-const deploy = () => {
-    const { contractFilePath, myAccount, myArguments } = argumentMap.deploy;
+const deploy = (
+    contractFilePath = argumentMap.deploy.contractFilePath, 
+    myAccount = argumentMap.deploy.myAccount, 
+    myArguments = argumentMap.deploy.myArguments
+) => {
     console.log(`Compiling and deploying ${contractFilePath}`)
 
-    if(process.argv.length < 3) {
-        console.log("Please enter .sol file as first argument.");
-        process.exit();
-    };
-    
     const { abi, bytecode } = getABIAndBytecode(contractFilePath.toString());
     
     //TODO: sign this contract without Parity UI
@@ -97,16 +95,6 @@ console.log(
 )
 }
 
-var prompt = inquirer.createPromptModule();
-
-// prompt({
-//     type: "list",
-//     name: "operation",
-//     message: "What would you like to do?",
-//     choices: ["deploy", "call", "help"]
-// })
-// .then(res => console.log(res))
-
 const executeOperation = (choice) => {
     switch (choice) {
         case "deploy": {
@@ -125,6 +113,45 @@ const executeOperation = (choice) => {
     }
 }
 
+const deployPromptAndExecute = () => {
+    var prompt = inquirer.createPromptModule();
+    prompt([{
+        type: "input",
+        name: "contractFilePath",
+        message: "Path of *.sol file to deploy:",
+    },
+    {
+        type: "input",
+        name: "myAccount",
+        message: "Address of transaction sender:"
+    },
+    {
+        type: "input",
+        name: "myArguments",
+        message: "Arguments for contract constructor (optional):"
+    }])
+    .then(res => {
+        deploy(res.contractFilePath, res.myAccount, res.myArguments)
+    })
+}
+
 if(argumentMap.cliArgs) {
     executeOperation(argumentMap.operation)
+} else {
+    var prompt = inquirer.createPromptModule();
+    prompt({
+        type: "list",
+        name: "operation",
+        message: "What would you like to do?",
+        choices: ["deploy", "call", "help"]
+    })
+    .then((response) => {
+        const operation = response.operation
+
+        switch(operation) {
+            case "deploy": {
+                deployPromptAndExecute();
+            }
+        }
+    })
 }
