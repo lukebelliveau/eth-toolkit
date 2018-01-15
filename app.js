@@ -10,7 +10,7 @@ const getABIAndBytecode = contractPath => {
     const source = fs.readFileSync(contractPath).toString();
 
     const contracts = solc.compile(source).contracts
-    const compiledContract = contracts[':Greeter'];
+    const compiledContract = contracts[':greeter'];
     
     // grab artifacts
     const abi = JSON.parse(compiledContract.metadata).output.abi;
