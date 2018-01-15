@@ -1,3 +1,4 @@
-const { run } = require("./src/app");
+#! /usr/bin/env node
+const app = require("./src/app");
 
-run();
+app.run();
