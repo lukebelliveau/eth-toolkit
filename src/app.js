@@ -10,11 +10,11 @@ const argumentMap = require("./argumentMap");
 // Start Parity locally and connect via RPC
 const web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
 
-const getABIAndBytecode = contractPath => {
+const getABIAndBytecode = (contractPath, contractName) => {
     const source = fs.readFileSync(contractPath).toString();
 
     const contracts = solc.compile(source).contracts
-    const compiledContract = contracts[':greeter'];
+    const compiledContract = contracts[`:${contractName}`];
 
     // grab artifacts
     const abi = JSON.parse(compiledContract.metadata).output.abi;
@@ -25,11 +25,12 @@ const getABIAndBytecode = contractPath => {
 
 const call = (
     contractPath = argumentMap.call.contractPath,
+    contractName = argumentMap.call.contractName,
     call = argumentMap.call.call,
     contractAddress = argumentMap.call.contractAddress,
     options = argumentMap.call.options,
 ) => {
-    contractABI = getABIAndBytecode(contractPath).abi;
+    contractABI = getABIAndBytecode(contractPath, contractName).abi;
 
     const contract = new web3.eth.Contract(contractABI, contractAddress);
 
@@ -48,12 +49,13 @@ const call = (
 
 const deploy = (
     contractPath = argumentMap.deploy.contractPath, 
+    contractName = argumentMap.deploy.contractName,
     myAccount = argumentMap.deploy.myAccount, 
     myArguments = argumentMap.deploy.myArguments
 ) => {
     console.log(`Compiling and deploying ${contractPath}`)
 
-    const { abi, bytecode } = getABIAndBytecode(contractPath.toString());
+    const { abi, bytecode } = getABIAndBytecode(contractPath.toString(), contractName);
     
     //TODO: sign this contract without Parity UI
     const contract = new web3.eth.Contract(abi, "", {
@@ -123,6 +125,11 @@ const deployPromptAndExecute = () => {
     },
     {
         type: "input",
+        name: "contractName",
+        message: "Name of contract for deployment:"
+    },
+    {
+        type: "input",
         name: "myAccount",
         message: "Address of transaction sender:"
     },
@@ -132,7 +139,7 @@ const deployPromptAndExecute = () => {
         message: "Arguments for contract constructor (optional):"
     }])
     .then(res => {
-        return deploy(res.contractPath, res.myAccount, res.myArguments)
+        return deploy(res.contractPath, res.contractName, res.myAccount, res.myArguments)
     })
 }
 
@@ -142,6 +149,11 @@ const callPromptAndExecute = () => {
         type: "input",
         name: "contractPath",
         message: "Path to *.sol file for contract call:",
+    },
+    {
+        type: "input",
+        name: "contractName",
+        message: "Name of contract for deployment:"
     },
     {
         type: "input",
@@ -159,7 +171,7 @@ const callPromptAndExecute = () => {
         message: "Options (optional):"
     }])
     .then(res => {
-        return call(res.contractPath, res.call, res.contractAddress, res.options)
+        return call(res.contractPath, res.contractName, res.call, res.contractAddress, res.options)
     })
 }
 
