@@ -10,7 +10,7 @@ const getABIAndBytecode = contractPath => {
     const source = fs.readFileSync(contractPath).toString();
 
     const contracts = solc.compile(source).contracts
-    const compiledContract = contracts[':greeter'];
+    const compiledContract = contracts[':Greeter'];
     
     // grab artifacts
     const abi = JSON.parse(compiledContract.metadata).output.abi;
@@ -45,13 +45,14 @@ const call = (
 const deploy = () => {
     console.log(`Compiling and deploying ${process.argv[3]}`)
     const myAccount = process.argv[4];
+    const myArguments = process.argv[5];
 
     if(process.argv.length < 3) {
         console.log("Please enter .sol file as first argument.");
         process.exit();
     };
     
-    const { abi, bytecode } = getABIAndBytecode(process.argv[3]);
+    const { abi, bytecode } = getABIAndBytecode(process.argv[3].toString());
     
     //TODO: sign this contract without Parity UI
     const contract = new web3.eth.Contract(abi, "", {
@@ -60,10 +61,9 @@ const deploy = () => {
     });
     
     // Initialize with constructor arguments and send to blockchain
-    const myMessage = "bonsoir";
     console.log("Attempting to deploy contract, approve in Parity UI...");
     contract.deploy({
-        arguments: [myMessage]
+        arguments: [myArguments]
     })
     .send()
     .then(res => {
