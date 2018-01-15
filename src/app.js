@@ -34,7 +34,7 @@ const call = (
     const contract = new web3.eth.Contract(contractABI, contractAddress);
 
     console.log(`Calling ${call} on ${contractAddress}...`);
-    eval(`contract.methods.${call}.call()`)
+    return eval(`contract.methods.${call}.call()`)
     .then(res => {
         console.log(`Response:`)
         console.log(res)
@@ -47,13 +47,13 @@ const call = (
 };
 
 const deploy = (
-    contractFilePath = argumentMap.deploy.contractFilePath, 
+    contractPath = argumentMap.deploy.contractPath, 
     myAccount = argumentMap.deploy.myAccount, 
     myArguments = argumentMap.deploy.myArguments
 ) => {
-    console.log(`Compiling and deploying ${contractFilePath}`)
+    console.log(`Compiling and deploying ${contractPath}`)
 
-    const { abi, bytecode } = getABIAndBytecode(contractFilePath.toString());
+    const { abi, bytecode } = getABIAndBytecode(contractPath.toString());
     
     //TODO: sign this contract without Parity UI
     const contract = new web3.eth.Contract(abi, "", {
@@ -63,7 +63,7 @@ const deploy = (
     
     // Initialize with constructor arguments and send to blockchain
     console.log("Attempting to deploy contract, approve in Parity UI...");
-    contract.deploy({
+    return contract.deploy({
         arguments: [myArguments]
     })
     .send()
@@ -93,6 +93,7 @@ console.log(
         Example:
         $ eth-toolkit call Greeter.sol "say()" 0x83d85eEB38A2dC37EAc0239c19b343a7653d8F79`
 )
+return new Promise(res => res());
 }
 
 const executeOperation = (choice) => {
@@ -115,10 +116,10 @@ const executeOperation = (choice) => {
 
 const deployPromptAndExecute = () => {
     var prompt = inquirer.createPromptModule();
-    prompt([{
+    return prompt([{
         type: "input",
-        name: "contractFilePath",
-        message: "Path of *.sol file to deploy:",
+        name: "contractPath",
+        message: "Path to *.sol file for deployment:",
     },
     {
         type: "input",
@@ -131,27 +132,81 @@ const deployPromptAndExecute = () => {
         message: "Arguments for contract constructor (optional):"
     }])
     .then(res => {
-        deploy(res.contractFilePath, res.myAccount, res.myArguments)
+        return deploy(res.contractPath, res.myAccount, res.myArguments)
     })
 }
 
-if(argumentMap.cliArgs) {
-    executeOperation(argumentMap.operation)
-} else {
+const callPromptAndExecute = () => {
+    var prompt = inquirer.createPromptModule();
+    return prompt([{
+        type: "input",
+        name: "contractPath",
+        message: "Path to *.sol file for contract call:",
+    },
+    {
+        type: "input",
+        name: "call",
+        message: "Call to execute (ex. add(1, 2)):"
+    },
+    {
+        type: "input",
+        name: "contractAddress",
+        message: "Address of contract to call:"
+    },
+    {
+        type: "input",
+        name: "options",
+        message: "Options (optional):"
+    }])
+    .then(res => {
+        return call(res.contractPath, res.call, res.contractAddress, res.options)
+    })
+}
+
+const promptAfter = (fxn) => {
+    fxn()
+    .then(() => {
+        runPrompt();
+    })
+}
+
+const runPrompt = () => {
     var prompt = inquirer.createPromptModule();
     prompt({
         type: "list",
         name: "operation",
         message: "What would you like to do?",
-        choices: ["deploy", "call", "help"]
+        choices: ["deploy", "call", "help", "exit"]
     })
     .then((response) => {
         const operation = response.operation
 
         switch(operation) {
             case "deploy": {
-                deployPromptAndExecute();
+                promptAfter(deployPromptAndExecute);
+                break;
+            };
+            case "call": {
+                promptAfter(callPromptAndExecute);
+                break;
+            };
+            case "help": {
+                promptAfter(help);
+                break;
             }
+            case "exit": {
+                break;
+            };
+            default: {
+                console.error("Issue parsing the selection option.");
+                process.exit(1);
+            };
         }
     })
+}
+
+if(argumentMap.cliArgs) {
+    executeOperation(argumentMap.operation)
+} else {
+    runPrompt();
 }
