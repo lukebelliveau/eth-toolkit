@@ -77,13 +77,17 @@ const deploy = (
         });
 
         console.log(`Attempting to deploy contract from address ${newAccountAddress}...`);
-        // create deploy object
-        const toDeploy = contract.deploy({
-            arguments: [myArguments]
-        })
+        let deployment;
+        if(myArguments) {
+            deployment = contract.deploy({
+                arguments: [myArguments]
+            })
+        } else {
+            deployment = contract.deploy();
+        }
 
         // encode ABI (contract data + constructor parameters)
-        const deployABI = toDeploy.encodeABI();
+        const deployABI = deployment.encodeABI();
         // sign transaction
         return newAccount.signTransaction({
             data: deployABI,
@@ -108,9 +112,16 @@ const deploy = (
         });
 
         console.log("Attempting to deploy contract, you must approve in Parity UI...");
-        return contract.deploy({
-            arguments: [myArguments]
-        })
+        let deployment;
+        if(myArguments) {
+            deployment = contract.deploy({
+                arguments: [myArguments]
+            })
+        } else {
+            deployment = contract.deploy();
+        }
+
+        deployment
         .send()
         .then(res => {
             const deployedAddress = res._address;
