@@ -1,5 +1,5 @@
-yarn start deploy playground/Greeter.sol 0x00a329c0648769A73afAc7F9381E08FB43dBEA72 bonsoir
+yarn start args deploy playground/Greeter.sol 0x00a329c0648769A73afAc7F9381E08FB43dBEA72 bonsoir
 
-yarn start call playground/Greeter.sol "say()" 0x83d85eEB38A2dC37EAc0239c19b343a7653d8F79
+yarn start args call playground/Greeter.sol "say()" 0x83d85eEB38A2dC37EAc0239c19b343a7653d8F79
 
-yarn start call playground/Coin.sol "mint('0x00a329c0648769A73afAc7F9381E08FB43dBEA72', 20)" 0x9BB69befBAA567a7EaEE33b671756596517338F4
+yarn start args call playground/Coin.sol "mint('0x00a329c0648769A73afAc7F9381E08FB43dBEA72', 20)" 0x9BB69befBAA567a7EaEE33b671756596517338F4

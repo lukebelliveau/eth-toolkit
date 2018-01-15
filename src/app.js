@@ -1,7 +1,11 @@
 #! /usr/bin/env node
-const Web3 = require('web3');
+const Web3 = require("web3");
 const solc = require("solc");
-const fs = require('fs');
+const fs = require("fs");
+
+const inquirer = require("inquirer")
+
+const argumentMap = require("./argumentMap");
 
 // Start Parity locally and connect via RPC
 const web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
@@ -11,7 +15,7 @@ const getABIAndBytecode = contractPath => {
 
     const contracts = solc.compile(source).contracts
     const compiledContract = contracts[':greeter'];
-    
+
     // grab artifacts
     const abi = JSON.parse(compiledContract.metadata).output.abi;
     const bytecode = '0x' + compiledContract.bytecode;
@@ -20,10 +24,10 @@ const getABIAndBytecode = contractPath => {
 }
 
 const call = (
-    contractPath = process.argv[3],
-    call = process.argv[4], 
-    contractAddress = process.argv[5], 
-    options = process.argv[6]
+    contractPath = argumentMap.call.contractPath,
+    call = argumentMap.call.call,
+    contractAddress = argumentMap.call.contractAddress,
+    options = argumentMap.call.options,
 ) => {
     contractABI = getABIAndBytecode(contractPath).abi;
 
@@ -43,16 +47,15 @@ const call = (
 };
 
 const deploy = () => {
-    console.log(`Compiling and deploying ${process.argv[3]}`)
-    const myAccount = process.argv[4];
-    const myArguments = process.argv[5];
+    const { contractFilePath, myAccount, myArguments } = argumentMap.deploy;
+    console.log(`Compiling and deploying ${contractFilePath}`)
 
     if(process.argv.length < 3) {
         console.log("Please enter .sol file as first argument.");
         process.exit();
     };
     
-    const { abi, bytecode } = getABIAndBytecode(process.argv[3].toString());
+    const { abi, bytecode } = getABIAndBytecode(contractFilePath.toString());
     
     //TODO: sign this contract without Parity UI
     const contract = new web3.eth.Contract(abi, "", {
@@ -94,18 +97,34 @@ console.log(
 )
 }
 
-switch (process.argv[2]) {
-    case "deploy": {
-        deploy();
-        break;
-    };
-    case "call": {
-        call();
-        break;
+var prompt = inquirer.createPromptModule();
+
+// prompt({
+//     type: "list",
+//     name: "operation",
+//     message: "What would you like to do?",
+//     choices: ["deploy", "call", "help"]
+// })
+// .then(res => console.log(res))
+
+const executeOperation = (choice) => {
+    switch (choice) {
+        case "deploy": {
+            deploy();
+            break;
+        };
+        case "call": {
+            call();
+            break;
+        }
+        case "help": {
+            help()
+            break;
+        }
+        default: console.log("Invalid command.");
     }
-    case "--help": {
-        help()
-        break;
-    }
-    default: console.log("Invalid command.");
+}
+
+if(argumentMap.cliArgs) {
+    executeOperation(argumentMap.operation)
 }
