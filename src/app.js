@@ -93,17 +93,13 @@ const deploy = (
             data: deployABI,
             gas: 1000000,
         }, newAccountPrivateKey)
-        .then(transaction => web3.eth.sendSignedTransaction(transaction.rawTransaction))
-        .then(res => {
-            const deployedAddress = res.contractAddress;
 
-            console.log("Success! Contract deployed to address:");
-            console.log("- " + deployedAddress)
-        })
-        .catch(err => {
-            console.log("Error deploying contract:")
-            console.log(err)
-        })
+        .then(transaction => 
+            deployAndReport(
+                web3.eth.sendSignedTransaction, 
+                "contractAddress", 
+                transaction.rawTransaction)
+            );
 
     } else {
         const contract = new web3.eth.Contract(abi, "", {
@@ -121,19 +117,22 @@ const deploy = (
             deployment = contract.deploy();
         }
 
-        deployment
-        .send()
-        .then(res => {
-            const deployedAddress = res._address;
-
-            console.log("Success! Contract deployed to address:");
-            console.log("- " + deployedAddress)
-        })
-        .catch(err => {
-            console.log("Error deploying contract:")
-            console.log("- " + err)
-        })
+        return deployAndReport(deployment.send, "_address");
     }
+}
+
+const deployAndReport = (send, addressKey, args) => {
+    return send(args)
+    .then(res => {
+        const deployedAddress = res[addressKey];
+
+        console.log("Success! Contract deployed to address:");
+        console.log("- " + deployedAddress)
+    })
+    .catch(err => {
+        console.log("Error deploying contract:")
+        console.log("- " + err)
+    })
 }
 
 const help = () => {
