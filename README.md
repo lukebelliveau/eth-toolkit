@@ -7,7 +7,10 @@ WIP
 
     $ parity
 
-    $ eth-toolkit --help
+    $ eth-toolkit
+
+The easiest way to navigate is the prompt interface, which is the default when you start `eth-toolkit`.
+If you'd rather enter all arguments in one command, run `eth-toolkit args` and enter values as shown below.
     
 Note that you still need to go into the Parity UI to confirm transaction requests.
 
@@ -16,7 +19,7 @@ Note that you still need to go into the Parity UI to confirm transaction request
 
 Example:
 
-    $ yarn start deploy Greeter.sol 0x00a329c0648769A73afAc7F9381E08FB43dBEA72 "Hello world!"
+    $ eth-toolkit args deploy Greeter.sol 0x00a329c0648769A73afAc7F9381E08FB43dBEA72 "Hello world!"
 
 *Note: This script assumes that the name of your contract is the same as the filename,
 so `Greeter.sol` corresponds to `contract Greeter {...}`
@@ -26,4 +29,4 @@ so `Greeter.sol` corresponds to `contract Greeter {...}`
 
 Example:
 
-    $ eth-toolkit call Greeter.sol "say()" 0x83d85eEB38A2dC37EAc0239c19b343a7653d8F79
+    $ eth-toolkit args call Greeter.sol "say()" 0x83d85eEB38A2dC37EAc0239c19b343a7653d8F79
