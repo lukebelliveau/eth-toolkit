@@ -9,7 +9,8 @@
   },
   "scripts": {
     "start": "node src/app.js",
-    "watch": "nodemon src/app.js"
+    "watch": "nodemon src/app.js",
+    "prettier": "prettier src/* --write"
   },
   "bin": {
     "eth-toolkit": "src/app.js"
@@ -21,6 +22,7 @@
     "web3": "^1.0.0-beta.27"
   },
   "devDependencies": {
-    "nodemon": "^1.14.11"
+    "nodemon": "^1.14.11",
+    "prettier": "^1.10.2"
   }
 }
