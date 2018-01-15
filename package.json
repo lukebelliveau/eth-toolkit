@@ -1,19 +1,19 @@
 {
   "name": "eth-toolkit",
-  "version": "0.0.17",
-  "main": "src/app.js",
+  "version": "0.0.18",
+  "main": "index.js",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/lukebelliveau/eth-toolkit.git"
   },
   "scripts": {
-    "start": "node src/app.js",
-    "watch": "nodemon src/app.js",
+    "start": "node index.js",
+    "watch": "nodemon index.js",
     "prettier": "prettier --trailing-comma all --write \"./src/**/*.js\" \"./test/**/*.js\""
   },
   "bin": {
-    "eth-toolkit": "src/app.js"
+    "eth-toolkit": "index.js"
   },
   "dependencies": {
     "fs": "^0.0.1-security",
