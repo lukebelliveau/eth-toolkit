@@ -1,6 +1,8 @@
 # eth-toolkit
 CLI tool for Ethereum developers.
 
+![Sample screenshot](https://image.ibb.co/icj9U6/Screen_Shot_2018_01_15_at_2_14_58_PM.png)
+
 WIP
 
 This is only intended for use on development chains. I repeat..
