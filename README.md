@@ -1,5 +1,5 @@
 # eth-toolkit
-CLI tool for Ethereum developers.
+CLI tool for Ethereum developers. Mostly hacking on this to play with the [web3 client](https://github.com/ethereum/web3.js/). 
 
 ![Sample screenshot](https://image.ibb.co/icj9U6/Screen_Shot_2018_01_15_at_2_14_58_PM.png)
 
